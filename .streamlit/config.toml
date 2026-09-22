@@ -1,0 +1,18 @@
+# Streamlit 服务端配置（本地与云端部署通用）
+
+[server]
+headless = true
+address = "0.0.0.0"          # 监听所有网卡，容器/公网部署必需
+port = 8501
+maxUploadSize = 20           # 允许上传/拍照图片最大 20MB
+
+[browser]
+gatherUsageStats = false     # 关闭匿名使用统计
+
+# 视觉主题：靛蓝 + 暖金，高对比度，适配视障群体与弱光环境
+[theme]
+primaryColor = "#4F46E5"
+backgroundColor = "#C9F0E8"
+secondaryBackgroundColor = "#DCF4EE"
+textColor = "#1E293B"
+font = "sans serif"

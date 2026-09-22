@@ -1,0 +1,13 @@
+.git
+.gitignore
+.env
+.streamlit/secrets.toml
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+*.mp3
+*.wav
+*.ogg
+.DS_Store
+Thumbs.db
