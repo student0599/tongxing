@@ -378,12 +378,18 @@ _REAR_CAMERA_HTML = """
   var err = document.getElementById('camerr');
   var stream = null;
 
-  function send(value) {
-    if (window.Streamlit && window.Streamlit.setComponentValue) {
-      window.Streamlit.setComponentValue(value);
-    } else {
-      window.parent.postMessage({ type: 'streamlit:setComponentValue', value: value }, '*');
-    }
+  function post(type, payload) {
+    var msg = { type: type };
+    for (var k in payload) { msg[k] = payload[k]; }
+    window.parent.postMessage(msg, '*');
+  }
+
+  function sendReady() {
+    post('streamlit:componentReady', { apiVersion: 1 });
+  }
+
+  function sendValue(value) {
+    post('streamlit:setComponentValue', { value: value, dataType: 'json' });
   }
 
   async function start() {
@@ -406,13 +412,13 @@ _REAR_CAMERA_HTML = """
     canvas.height = video.videoHeight || 480;
     canvas.getContext('2d').drawImage(video, 0, 0);
     var data = canvas.toDataURL('image/jpeg', 0.85);
-    stream.getTracks().forEach(function (t) { t.stop(); });
-    send(data);
+    btn.disabled = true;
+    btn.textContent = '已拍照，正在识别…';
+    sendValue(data);
   });
 
-  if (window.Streamlit && window.Streamlit.setFrameHeight) {
-    window.Streamlit.setFrameHeight(440);
-  }
+  sendReady();
+  setTimeout(sendReady, 400);  // 兜底：防止父页面监听尚未就绪
   start();
 })();
 </script>
