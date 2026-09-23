@@ -68,7 +68,9 @@ if image_bytes is not None:
 
     if result.ok:
         if result.guidance:
-            st.markdown(f'<div class="speech-big">🗣️ {result.guidance}</div>', unsafe_allow_html=True)
+            env_part = result.environment_speech or ""
+            att_part = result.attention or ""
+            st.markdown(f'<div class="speech-big">📋 环境详情：{env_part}<br>⚠️ 注意事项：{att_part}</div>', unsafe_allow_html=True)
             render_audio(result.audio)
         with st.expander("🔎 环境识别详情"):
             st.markdown(format_environment(result.environment or {}))

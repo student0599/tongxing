@@ -27,7 +27,9 @@ class NavigateResult:
 
     ok: bool
     environment: Optional[Dict[str, Any]] = None
-    guidance: Optional[str] = None
+    guidance: Optional[str] = None          # 完整播报文本（环境详情 + 注意事项）
+    environment_speech: Optional[str] = None  # 环境详情（第一段）
+    attention: Optional[str] = None           # 注意事项（第二段）
     audio: Optional[bytes] = None
     error: str = ""
 
@@ -97,25 +99,27 @@ class Orchestrator:
             return NavigateResult(ok=False, error=env_res.error)
         environment = env_res.data
 
-        # 2. 指引生成（携带历史上下文）
-        guide_res = self.guidance.run(
+        # 2. 两段式播报生成（先环境详情，再注意事项）
+        narr_res = self.guidance.narrate(
             environment=environment,
             goal=session.goal,
             history=session.history(n=3),
         )
-        if not guide_res.ok:
-            return NavigateResult(ok=False, environment=environment, error=guide_res.error)
-        guidance = guide_res.data
+        if not narr_res.ok:
+            return NavigateResult(ok=False, environment=environment, error=narr_res.error)
+        environment_speech = (narr_res.data.get("environment_speech") or "").strip().strip("。；;． ")
+        attention = (narr_res.data.get("attention") or "").strip().strip("。；;． ")
+        guidance = "。".join([p for p in (environment_speech, attention) if p]) + "。"
 
-        # 3. 语音合成
+        # 3. 语音合成（播报完整两段）
         tts_res = self.tts.run(guidance)
         if not tts_res.ok:
-            # TTS 失败不阻断流程，仍返回指引文本
-            return NavigateResult(ok=True, environment=environment, guidance=guidance, error=f"语音合成失败：{tts_res.error}")
+            # TTS 失败不阻断流程，仍返回播报文本
+            return NavigateResult(ok=True, environment=environment, guidance=guidance, environment_speech=environment_speech, attention=attention, error=f"语音合成失败：{tts_res.error}")
 
         # 4. 记录会话
         session.add_turn(environment, guidance)
-        return NavigateResult(ok=True, environment=environment, guidance=guidance, audio=tts_res.data)
+        return NavigateResult(ok=True, environment=environment, guidance=guidance, environment_speech=environment_speech, attention=attention, audio=tts_res.data)
 
     # ------------------------------------------------------------------ #
     # 单次环境识别（不含上下文）
@@ -130,16 +134,20 @@ class Orchestrator:
             return NavigateResult(ok=False, error=env_res.error)
         environment = env_res.data
 
-        guide_res = self.guidance.run(environment=environment, goal="", history=None)
-        if not guide_res.ok:
-            return NavigateResult(ok=False, environment=environment, error=guide_res.error)
-        guidance = guide_res.data
+        narr_res = self.guidance.narrate(environment=environment, goal="", history=None)
+        if not narr_res.ok:
+            return NavigateResult(ok=False, environment=environment, error=narr_res.error)
+        environment_speech = (narr_res.data.get("environment_speech") or "").strip().strip("。；;． ")
+        attention = (narr_res.data.get("attention") or "").strip().strip("。；;． ")
+        guidance = "。".join([p for p in (environment_speech, attention) if p]) + "。"
 
         tts_res = self.tts.run(guidance)
         return NavigateResult(
             ok=True,
             environment=environment,
             guidance=guidance,
+            environment_speech=environment_speech,
+            attention=attention,
             audio=tts_res.data if tts_res.ok else None,
         )
 
