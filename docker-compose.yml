@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  tongxing:
+    build: .
+    ports:
+      - "8501:8501"
+    restart: always
+    environment:
+      - ZHIPU_API_KEY=${ZHIPU_API_KEY}
+      - EMERGENCY_CONTACT_NAME=${EMERGENCY_CONTACT_NAME:-家人}
+      - EMERGENCY_CONTACT_PHONE=${EMERGENCY_CONTACT_PHONE:-}
