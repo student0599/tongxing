@@ -358,6 +358,35 @@ def inject_pwa() -> None:
     st.markdown(_PWA_HTML, unsafe_allow_html=True)
 
 
+# 后置摄像头：覆盖 getUserMedia，默认使用后置（environment）镜头
+_CAMERA_FACING_HTML = """
+<script>
+(function () {
+  if (window.__tongxing_rear_camera) return;
+  window.__tongxing_rear_camera = true;
+  try {
+    var orig = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+    navigator.mediaDevices.getUserMedia = function (constraints) {
+      if (constraints && constraints.video) {
+        if (constraints.video === true) {
+          constraints.video = { facingMode: { ideal: "environment" } };
+        } else if (typeof constraints.video === "object") {
+          constraints.video.facingMode = { ideal: "environment" };
+        }
+      }
+      return orig(constraints);
+    };
+  } catch (e) {}
+})();
+</script>
+"""
+
+
+def inject_camera_facing() -> None:
+    """让摄像头默认使用后置镜头（手机拍摄环境更直观）。"""
+    st.markdown(_CAMERA_FACING_HTML, unsafe_allow_html=True)
+
+
 def set_page() -> None:
     """统一页面配置（须作为每个脚本的首个 Streamlit 命令调用）。"""
     st.set_page_config(
@@ -368,3 +397,4 @@ def set_page() -> None:
     )
     inject_styles()
     inject_pwa()
+    inject_camera_facing()
