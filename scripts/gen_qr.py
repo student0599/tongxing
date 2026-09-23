@@ -15,6 +15,10 @@ from pathlib import Path
 
 
 def main() -> None:
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")  # 避免中文 Windows 控制台编码报错
+    except Exception:
+        pass
     url = sys.argv[1] if len(sys.argv) > 1 else ""
     if not url or "://" not in url:
         print('用法: python scripts/gen_qr.py "https://你的应用URL"')
