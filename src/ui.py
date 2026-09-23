@@ -9,6 +9,7 @@ from __future__ import annotations
 from typing import Optional
 
 import streamlit as st
+import streamlit.components.v1 as components
 
 from src.config import load_config
 from src.orchestrator import Orchestrator
@@ -327,8 +328,7 @@ def get_image_input(label: str = "拍照（对准前方环境）") -> Optional[b
         label_visibility="collapsed",
     )
     if source == "📷 拍照":
-        shot = st.camera_input(label)
-        return shot.getvalue() if shot is not None else None
+        return rear_camera_input()
     upload = st.file_uploader("上传一张照片", type=["jpg", "jpeg", "png"])
     return upload.getvalue() if upload is not None else None
 
@@ -358,33 +358,75 @@ def inject_pwa() -> None:
     st.markdown(_PWA_HTML, unsafe_allow_html=True)
 
 
-# 后置摄像头：覆盖 getUserMedia，默认使用后置（environment）镜头
-_CAMERA_FACING_HTML = """
+# 后置摄像头组件：iframe 内用 getUserMedia 请求后置镜头，拍照后回传照片
+_REAR_CAMERA_HTML = """
+<style>
+  .cam-wrap { text-align: center; }
+  .cam-video { width: 100%; max-width: 480px; border-radius: 12px; background: #000; }
+  .cam-btn { width: 100%; padding: 14px; margin-top: 10px; font-size: 18px; font-weight: 700; color: #fff; background: #4F46E5; border: none; border-radius: 10px; cursor: pointer; }
+  .cam-err { color: #d32f2f; margin-top: 8px; font-size: 14px; }
+</style>
+<div class="cam-wrap">
+  <video id="cam" class="cam-video" autoplay playsinline muted></video>
+  <button class="cam-btn" id="snap">📷 拍照</button>
+  <div class="cam-err" id="camerr"></div>
+</div>
 <script>
 (function () {
-  if (window.__tongxing_rear_camera) return;
-  window.__tongxing_rear_camera = true;
-  try {
-    var orig = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
-    navigator.mediaDevices.getUserMedia = function (constraints) {
-      if (constraints && constraints.video) {
-        if (constraints.video === true) {
-          constraints.video = { facingMode: { ideal: "environment" } };
-        } else if (typeof constraints.video === "object") {
-          constraints.video.facingMode = { ideal: "environment" };
-        }
-      }
-      return orig(constraints);
-    };
-  } catch (e) {}
+  var video = document.getElementById('cam');
+  var btn = document.getElementById('snap');
+  var err = document.getElementById('camerr');
+  var stream = null;
+
+  function send(value) {
+    if (window.Streamlit && window.Streamlit.setComponentValue) {
+      window.Streamlit.setComponentValue(value);
+    } else {
+      window.parent.postMessage({ type: 'streamlit:setComponentValue', value: value }, '*');
+    }
+  }
+
+  async function start() {
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: 'environment' } },
+        audio: false
+      });
+      video.srcObject = stream;
+      await video.play();
+    } catch (e) {
+      err.textContent = '无法打开后置摄像头：' + e.message;
+    }
+  }
+
+  btn.addEventListener('click', function () {
+    if (!stream) { err.textContent = '摄像头尚未就绪，请稍候重试'; return; }
+    var canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth || 640;
+    canvas.height = video.videoHeight || 480;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+    var data = canvas.toDataURL('image/jpeg', 0.85);
+    stream.getTracks().forEach(function (t) { t.stop(); });
+    send(data);
+  });
+
+  if (window.Streamlit && window.Streamlit.setFrameHeight) {
+    window.Streamlit.setFrameHeight(440);
+  }
+  start();
 })();
 </script>
 """
 
 
-def inject_camera_facing() -> None:
-    """让摄像头默认使用后置镜头（手机拍摄环境更直观）。"""
-    st.markdown(_CAMERA_FACING_HTML, unsafe_allow_html=True)
+def rear_camera_input():
+    """后置摄像头拍照，返回 JPEG 字节；未拍照返回 None。"""
+    import base64
+
+    data = components.html(_REAR_CAMERA_HTML, height=440)
+    if isinstance(data, str) and data.startswith("data:image"):
+        return base64.b64decode(data.split(",", 1)[1])
+    return None
 
 
 def set_page() -> None:
@@ -397,4 +439,3 @@ def set_page() -> None:
     )
     inject_styles()
     inject_pwa()
-    inject_camera_facing()
