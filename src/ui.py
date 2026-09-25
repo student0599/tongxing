@@ -6,11 +6,9 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Optional
 
 import streamlit as st
-from streamlit.components.v1 import declare_component
 
 from src.config import load_config
 from src.orchestrator import Orchestrator
@@ -329,7 +327,7 @@ def get_image_input(label: str = "拍照（对准前方环境）") -> Optional[b
         label_visibility="collapsed",
     )
     if source == "📷 拍照":
-        return rear_camera_input()
+        return rear_camera_input(label)
     upload = st.file_uploader("上传一张照片", type=["jpg", "jpeg", "png"])
     return upload.getvalue() if upload is not None else None
 
@@ -359,19 +357,10 @@ def inject_pwa() -> None:
     st.markdown(_PWA_HTML, unsafe_allow_html=True)
 
 
-# 后置摄像头组件：declare_component 提供的双向组件，拍照后回传照片
-_CAMERA_COMPONENT_DIR = str(Path(__file__).resolve().parent.parent / "static" / "camera_component")
-_rear_camera_component = declare_component("rear_camera", path=_CAMERA_COMPONENT_DIR)
-
-
-def rear_camera_input():
-    """后置摄像头拍照，返回 JPEG 字节；未拍照返回 None。"""
-    import base64
-
-    data = _rear_camera_component()
-    if isinstance(data, str) and data.startswith("data:image"):
-        return base64.b64decode(data.split(",", 1)[1])
-    return None
+def rear_camera_input(label: str = "拍照（对准前方环境）") -> Optional[bytes]:
+    """拍照（st.camera_input 原生组件）。"""
+    shot = st.camera_input(label)
+    return shot.getvalue() if shot is not None else None
 
 
 def set_page() -> None:
