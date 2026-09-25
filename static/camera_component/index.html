@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: sans-serif; margin: 0; padding: 8px; text-align: center; background: transparent; }
+    video { width: 100%; max-width: 480px; border-radius: 12px; background: #000; }
+    button { width: 100%; max-width: 480px; padding: 14px; margin-top: 10px; font-size: 18px; font-weight: 700; color: #fff; background: #4F46E5; border: none; border-radius: 10px; cursor: pointer; }
+    button:disabled { background: #9aa4c4; cursor: default; }
+    .err { color: #d32f2f; margin-top: 8px; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <video id="cam" autoplay playsinline muted></video>
+  <button id="snap">📷 拍照</button>
+  <div class="err" id="err"></div>
+  <script>
+    (function () {
+      var video = document.getElementById('cam');
+      var btn = document.getElementById('snap');
+      var err = document.getElementById('err');
+      var stream = null;
+
+      function post(type, payload) {
+        var msg = { type: type };
+        for (var k in payload) { msg[k] = payload[k]; }
+        window.parent.postMessage(msg, '*');
+      }
+
+      function sendReady() {
+        post('streamlit:componentReady', { apiVersion: 1 });
+      }
+
+      function sendValue(value) {
+        post('streamlit:setComponentValue', { value: value, dataType: 'json' });
+      }
+
+      async function start() {
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: { ideal: 'environment' } },
+            audio: false
+          });
+          video.srcObject = stream;
+          await video.play();
+        } catch (e) {
+          err.textContent = '无法打开后置摄像头：' + e.message;
+        }
+      }
+
+      btn.addEventListener('click', function () {
+        if (!stream) { err.textContent = '摄像头尚未就绪，请稍候重试'; return; }
+        var canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth || 640;
+        canvas.height = video.videoHeight || 480;
+        canvas.getContext('2d').drawImage(video, 0, 0);
+        var data = canvas.toDataURL('image/jpeg', 0.85);
+        btn.disabled = true;
+        btn.textContent = '已拍照，正在识别…';
+        sendValue(data);
+      });
+
+      sendReady();
+      setTimeout(sendReady, 400);
+      start();
+    })();
+  </script>
+</body>
+</html>

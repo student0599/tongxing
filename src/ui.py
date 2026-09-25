@@ -6,10 +6,11 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Optional
 
 import streamlit as st
-import streamlit.components.v1 as components
+from streamlit.components.v1 import declare_component
 
 from src.config import load_config
 from src.orchestrator import Orchestrator
@@ -358,78 +359,16 @@ def inject_pwa() -> None:
     st.markdown(_PWA_HTML, unsafe_allow_html=True)
 
 
-# 后置摄像头组件：iframe 内用 getUserMedia 请求后置镜头，拍照后回传照片
-_REAR_CAMERA_HTML = """
-<style>
-  .cam-wrap { text-align: center; }
-  .cam-video { width: 100%; max-width: 480px; border-radius: 12px; background: #000; }
-  .cam-btn { width: 100%; padding: 14px; margin-top: 10px; font-size: 18px; font-weight: 700; color: #fff; background: #4F46E5; border: none; border-radius: 10px; cursor: pointer; }
-  .cam-err { color: #d32f2f; margin-top: 8px; font-size: 14px; }
-</style>
-<div class="cam-wrap">
-  <video id="cam" class="cam-video" autoplay playsinline muted></video>
-  <button class="cam-btn" id="snap">📷 拍照</button>
-  <div class="cam-err" id="camerr"></div>
-</div>
-<script>
-(function () {
-  var video = document.getElementById('cam');
-  var btn = document.getElementById('snap');
-  var err = document.getElementById('camerr');
-  var stream = null;
-
-  function post(type, payload) {
-    var msg = { type: type };
-    for (var k in payload) { msg[k] = payload[k]; }
-    window.parent.postMessage(msg, '*');
-  }
-
-  function sendReady() {
-    post('streamlit:componentReady', { apiVersion: 1 });
-  }
-
-  function sendValue(value) {
-    post('streamlit:setComponentValue', { value: value, dataType: 'json' });
-  }
-
-  async function start() {
-    try {
-      stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: { ideal: 'environment' } },
-        audio: false
-      });
-      video.srcObject = stream;
-      await video.play();
-    } catch (e) {
-      err.textContent = '无法打开后置摄像头：' + e.message;
-    }
-  }
-
-  btn.addEventListener('click', function () {
-    if (!stream) { err.textContent = '摄像头尚未就绪，请稍候重试'; return; }
-    var canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth || 640;
-    canvas.height = video.videoHeight || 480;
-    canvas.getContext('2d').drawImage(video, 0, 0);
-    var data = canvas.toDataURL('image/jpeg', 0.85);
-    btn.disabled = true;
-    btn.textContent = '已拍照，正在识别…';
-    sendValue(data);
-  });
-
-  sendReady();
-  setTimeout(sendReady, 400);  // 兜底：防止父页面监听尚未就绪
-  start();
-})();
-</script>
-"""
+# 后置摄像头组件：declare_component 提供的双向组件，拍照后回传照片
+_CAMERA_COMPONENT_DIR = str(Path(__file__).resolve().parent.parent / "static" / "camera_component")
+_rear_camera_component = declare_component("rear_camera", path=_CAMERA_COMPONENT_DIR)
 
 
 def rear_camera_input():
     """后置摄像头拍照，返回 JPEG 字节；未拍照返回 None。"""
     import base64
 
-    data = components.html(_REAR_CAMERA_HTML, height=440)
+    data = _rear_camera_component()
     if isinstance(data, str) and data.startswith("data:image"):
         return base64.b64decode(data.split(",", 1)[1])
     return None
