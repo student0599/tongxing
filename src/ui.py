@@ -435,6 +435,7 @@ def render_sidebar() -> None:
         st.page_link("pages/3_文字朗读.py", label="📖 文字朗读", use_container_width=True)
         st.page_link("pages/4_紧急求助.py", label="🆘 紧急求助", use_container_width=True)
         st.markdown("**👤 个人中心**")
+        st.page_link("pages/6_个人设置.py", label="⚙️ 个人设置", use_container_width=True)
         st.page_link("pages/5_作品介绍.py", label="🏆 作品介绍", use_container_width=True)
         st.markdown("---")
         st.caption("面向视障群体的 AI 出行与生活辅助智能体")
