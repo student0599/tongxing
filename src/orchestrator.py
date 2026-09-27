@@ -12,6 +12,7 @@
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from typing import Any, Dict, Optional
 
@@ -182,8 +183,25 @@ class Orchestrator:
             return EmergencyResult(ok=False, error=em_res.error)
         info = em_res.data
 
-        broadcast = info.get("broadcast") or "请帮帮我！"
-        tts_res = self.tts.run(broadcast, rate="+10%")  # 求助时语速稍快、声音稍大
+        # 组合完整播报：自救建议 + 注意事项 + 求助喊话
+        def _speak(s: Optional[str]) -> str:
+            steps = []
+            for ln in (s or "").replace("；", "\n").split("\n"):
+                ln = re.sub(r"^\s*\d+[\.、．]\s*", "", ln).strip().strip("。； ")
+                if ln:
+                    steps.append(ln)
+            return "。".join(steps)
+
+        parts = []
+        if info.get("advice"):
+            parts.append("自救建议，" + _speak(info["advice"]))
+        if info.get("precautions"):
+            parts.append("注意事项，" + _speak(info["precautions"]))
+        if info.get("broadcast"):
+            parts.append(info["broadcast"])
+        speech = "。".join(parts) + "。"
+
+        tts_res = self.tts.run(speech, rate="+10%")  # 求助时语速稍快、声音稍大
         return EmergencyResult(
             ok=True,
             info=info,
