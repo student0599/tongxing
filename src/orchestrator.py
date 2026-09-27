@@ -190,3 +190,15 @@ class Orchestrator:
             audio=tts_res.data if tts_res.ok else None,
             error="" if tts_res.ok else f"语音合成失败：{tts_res.error}",
         )
+
+    # ------------------------------------------------------------------ #
+    # 语音识别（ASR）
+    # ------------------------------------------------------------------ #
+    def transcribe(self, audio_bytes: bytes, mime: str = "audio/wav") -> str:
+        """把录音转成文字；失败返回空字符串。"""
+        if not self.ready:
+            return ""
+        try:
+            return self.client.transcribe(audio_bytes, mime=mime)
+        except Exception:  # noqa: BLE001
+            return ""

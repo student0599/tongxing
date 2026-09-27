@@ -122,3 +122,34 @@ class ZhipuClient:
             }
         ]
         return self.chat(model, messages, temperature=temperature, max_tokens=max_tokens)
+
+    def transcribe(
+        self,
+        audio_bytes: bytes,
+        model: str = "glm-asr-2512",
+        mime: str = "audio/wav",
+        timeout: int = 60,
+    ) -> str:
+        """语音识别（ASR）：把音频（wav/mp3）转成文字。"""
+        url = f"{self.base_url}/audio/transcriptions"
+        files = {"file": ("audio.wav", audio_bytes, mime)}
+        data = {"model": model}
+
+        last_err: Optional[str] = None
+        for attempt in range(2):
+            try:
+                resp = requests.post(
+                    url,
+                    headers={"Authorization": f"Bearer {self.api_key}"},
+                    files=files,
+                    data=data,
+                    timeout=timeout,
+                )
+                if resp.status_code == 200:
+                    j = resp.json()
+                    return j.get("text") or j.get("result") or j.get("content") or ""
+                last_err = f"HTTP {resp.status_code}: {resp.text[:300]}"
+            except requests.RequestException as exc:
+                last_err = str(exc)
+
+        raise ZhipuError(f"语音识别失败：{last_err}")
