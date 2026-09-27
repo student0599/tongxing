@@ -5,6 +5,9 @@
 
 from __future__ import annotations
 
+import base64
+from pathlib import Path
+
 import streamlit as st
 
 from src.ui import get_orchestrator, set_page, show_setup_banner
@@ -13,12 +16,15 @@ set_page()
 
 orch = get_orchestrator()
 
+# 内嵌 logo（base64 数据 URI，避免 URL 引用失效）
+_LOGO_B64 = base64.b64encode(Path("static/logo_small.png").read_bytes()).decode()
+
 # ---------------- 顶部导航栏 ----------------
 st.markdown(
-    """
+    f"""
     <div class="topnav">
       <div class="brand">
-        <span class="logo"><img src="/app/static/logo.png" width="24" style="vertical-align:-4px; border-radius:4px;"> 瞳行</span>
+        <span class="logo"><img src="data:image/png;base64,{_LOGO_B64}" width="24" style="vertical-align:-4px; border-radius:4px;"> 瞳行</span>
         <span class="slogan">AI 伴你同行 · 看见更好的自己</span>
       </div>
     </div>
@@ -31,10 +37,10 @@ show_setup_banner(orch)
 
 # ---------------- 主横幅 ----------------
 st.markdown(
-    """
+    f"""
     <div class="hero-banner">
       <span class="hero-tag">✨ 面向视障群体的 AI 出行与生活辅助智能体</span>
-      <h1><img src="/app/static/logo.png" width="46" style="vertical-align:-6px; border-radius:6px;"> 瞳行</h1>
+      <h1><img src="data:image/png;base64,{_LOGO_B64}" width="46" style="vertical-align:-6px; border-radius:6px;"> 瞳行</h1>
       <div class="hero-sub">
         用科技点亮生活，让每一次出行都更安全、更便捷、更有温度。<br>
         手机拍照 + AI 识别 + 语音指引，解决视障出行的「最后十米」盲区。
