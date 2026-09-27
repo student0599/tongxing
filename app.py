@@ -18,7 +18,7 @@ st.markdown(
     """
     <div class="topnav">
       <div class="brand">
-        <span class="logo">👁️ 瞳行</span>
+        <span class="logo"><img src="/app/static/logo.png" width="24" style="vertical-align:-4px; border-radius:4px;"> 瞳行</span>
         <span class="slogan">AI 伴你同行 · 看见更好的自己</span>
       </div>
     </div>
@@ -34,7 +34,7 @@ st.markdown(
     """
     <div class="hero-banner">
       <span class="hero-tag">✨ 面向视障群体的 AI 出行与生活辅助智能体</span>
-      <h1>👁️ 瞳行</h1>
+      <h1><img src="/app/static/logo.png" width="46" style="vertical-align:-6px; border-radius:6px;"> 瞳行</h1>
       <div class="hero-sub">
         用科技点亮生活，让每一次出行都更安全、更便捷、更有温度。<br>
         手机拍照 + AI 识别 + 语音指引，解决视障出行的「最后十米」盲区。
