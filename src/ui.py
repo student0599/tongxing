@@ -314,6 +314,13 @@ html, body, [data-testid="stAppViewContainer"] {
 .fcard-green { background: #DBF5E8; }
 .fcard-purple { background: #ECE6FF; }
 .fcard-red { background: #FFE3E3; }
+
+/* ---------- 侧边栏 ---------- */
+[data-testid="stSidebar"] {
+  background: #ffffff;
+  border-right: 1px solid var(--border);
+}
+.side-brand { font-size: 1.35rem; font-weight: 800; color: var(--primary); }
 </style>
 """
 
@@ -415,13 +422,32 @@ def rear_camera_input(label: str = "拍照（对准前方环境）") -> Optional
     return shot.getvalue() if shot is not None else None
 
 
+def render_sidebar() -> None:
+    """左侧导航侧边栏：首页 / 功能中心 / 个人中心。"""
+    with st.sidebar:
+        st.markdown('<div class="side-brand">👁️ 瞳行</div>', unsafe_allow_html=True)
+        st.caption("AI 伴你同行 · 看见更好的自己")
+        st.markdown("---")
+        st.page_link("app.py", label="🏠 首页", use_container_width=True)
+        st.markdown("**🧩 功能中心**")
+        st.page_link("pages/1_连续导航.py", label="🚶 连续导航", use_container_width=True)
+        st.page_link("pages/2_环境识别.py", label="👁️ 环境识别", use_container_width=True)
+        st.page_link("pages/3_文字朗读.py", label="📖 文字朗读", use_container_width=True)
+        st.page_link("pages/4_紧急求助.py", label="🆘 紧急求助", use_container_width=True)
+        st.markdown("**👤 个人中心**")
+        st.page_link("pages/5_作品介绍.py", label="🏆 作品介绍", use_container_width=True)
+        st.markdown("---")
+        st.caption("面向视障群体的 AI 出行与生活辅助智能体")
+
+
 def set_page() -> None:
     """统一页面配置（须作为每个脚本的首个 Streamlit 命令调用）。"""
     st.set_page_config(
         page_title=APP_TITLE,
         page_icon=APP_ICON,
         layout="centered",
-        initial_sidebar_state="collapsed",
+        initial_sidebar_state="expanded",
     )
     inject_styles()
     inject_pwa()
+    render_sidebar()
