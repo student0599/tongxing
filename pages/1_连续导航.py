@@ -40,15 +40,28 @@ if "nav_session" not in st.session_state:
     st.session_state.nav_session = NavigationSession()
 session: NavigationSession = st.session_state.nav_session
 
-# ---------------- 目的地设定 ----------------
-goal = st.text_input(
-    "📍 您要去哪里？（可留空，AI 会帮您观察环境）",
-    value=session.goal,
-    placeholder="例如：3号楼2单元门口 / 药店 / 地铁站A口",
-)
-if goal and goal != session.goal:
-    session.set_goal(goal)
-    session.turns.clear()  # 更换目的地则重新开始
+# ---------------- 目的地设定（语音为主，文字备选） ----------------
+st.markdown("### 🎙️ 语音说目的地")
+dest_audio = st.audio_input("点击录音，说出您要去哪里")
+
+if dest_audio is not None:
+    with st.spinner("正在识别目的地……"):
+        dest = orch.transcribe(dest_audio)
+    if dest:
+        session.set_goal(dest)
+        session.turns.clear()  # 更换目的地则重新开始
+        st.success(f"✅ 目的地：{dest}")
+    else:
+        st.warning("未能识别，请重试或改用文字输入")
+
+with st.expander("✍️ 或手动输入目的地"):
+    goal = st.text_input("目的地", value=session.goal, placeholder="例如：药店 / 3号楼2单元门口 / 地铁站A口")
+    if goal and goal != session.goal:
+        session.set_goal(goal)
+        session.turns.clear()  # 更换目的地则重新开始
+
+if session.goal:
+    st.info(f"📍 当前目的地：{session.goal}")
 
 # ---------------- 语音设置 ----------------
 with st.expander("🔊 语音设置"):
