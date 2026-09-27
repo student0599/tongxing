@@ -431,13 +431,9 @@ def rear_camera_input(label: str = "拍照（对准前方环境）") -> Optional
 def render_sidebar() -> None:
     """左侧导航侧边栏：首页 / 功能中心 / 个人中心。"""
     with st.sidebar:
-        st.markdown(
-            '<div style="text-align:center; margin:0.3rem 0 0.6rem;">'
-            '<img src="/app/static/logo.png" width="88" '
-            'style="border-radius:50%; box-shadow:0 2px 10px rgba(0,0,0,0.3);">'
-            '</div>',
-            unsafe_allow_html=True,
-        )
+        _, _c, _ = st.columns([1, 2, 1])
+        with _c:
+            st.image("static/logo.png", width=88)
         st.markdown('<div class="side-brand">👁️ 瞳行</div>', unsafe_allow_html=True)
         st.caption("AI 伴你同行 · 看见更好的自己")
         st.markdown("---")
