@@ -321,7 +321,7 @@ html, body, [data-testid="stAppViewContainer"] {
 
 /* ---------- 侧边栏 ---------- */
 [data-testid="stSidebar"] {
-  background: #ffffff;
+  background: linear-gradient(160deg, #E7FBF6 0%, #C9F0E8 45%, #BCE8F2 100%);
   border-right: 1px solid var(--border);
 }
 .side-brand { font-size: 1.35rem; font-weight: 800; color: var(--primary); }
