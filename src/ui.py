@@ -280,7 +280,11 @@ html, body, [data-testid="stAppViewContainer"] {
 
 /* ---------- 主横幅 ---------- */
 .hero-banner {
-  background: linear-gradient(130deg, #4F46E5 0%, #7C3AED 55%, #0D9488 100%);
+  background-color: #1E1B4B;
+  background-image: linear-gradient(rgba(15, 23, 42, 0.55), rgba(15, 23, 42, 0.40)), url('/app/static/hero_bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   border-radius: 1.2rem;
   padding: 2rem 2.1rem;
   color: #fff;
