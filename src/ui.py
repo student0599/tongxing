@@ -262,6 +262,58 @@ html, body, [data-testid="stAppViewContainer"] {
   line-height: 1.6;
 }
 .hl-card b { color: var(--primary); }
+
+/* ---------- 顶部导航栏 ---------- */
+.topnav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.55rem 1rem;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 0.9rem;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.07);
+  margin-bottom: 1rem;
+}
+.topnav .brand { display: flex; align-items: baseline; gap: 0.55rem; }
+.topnav .logo { font-size: 1.35rem; font-weight: 800; color: var(--primary); }
+.topnav .slogan { font-size: 0.85rem; color: var(--muted); }
+
+/* ---------- 主横幅 ---------- */
+.hero-banner {
+  background: linear-gradient(130deg, #4F46E5 0%, #7C3AED 55%, #0D9488 100%);
+  border-radius: 1.2rem;
+  padding: 2rem 2.1rem;
+  color: #fff;
+  margin-bottom: 0.9rem;
+  box-shadow: 0 10px 28px rgba(79, 70, 229, 0.28);
+}
+.hero-banner h1 { color: #fff !important; font-size: 2.3rem !important; margin: 0 0 0.5rem; line-height: 1.2; }
+.hero-banner .hero-tag {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.22);
+  color: #fff;
+  border-radius: 999px;
+  padding: 0.22rem 0.85rem;
+  font-size: 0.85rem;
+  margin-bottom: 0.9rem;
+}
+.hero-banner .hero-sub { color: rgba(255, 255, 255, 0.96); font-size: 1.02rem; line-height: 1.65; margin: 0; }
+
+/* ---------- 功能卡片（四色） ---------- */
+.fcard {
+  border-radius: 0.9rem;
+  padding: 1rem 1.1rem;
+  margin: 0.3rem 0 0.55rem;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+  min-height: 8.2rem;
+}
+.fcard .ficon { font-size: 1.9rem; line-height: 1; }
+.fcard .ftitle { font-size: 1.15rem; font-weight: 800; color: var(--text); margin: 0.4rem 0 0.25rem; }
+.fcard .fdesc { font-size: 0.9rem; line-height: 1.5; color: var(--text); margin: 0; }
+.fcard-blue { background: #E3EDFF; }
+.fcard-green { background: #DBF5E8; }
+.fcard-purple { background: #ECE6FF; }
+.fcard-red { background: #FFE3E3; }
 </style>
 """
 
