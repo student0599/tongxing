@@ -277,16 +277,12 @@ html, body, [data-testid="stAppViewContainer"] {
 
 /* ---------- 主横幅 ---------- */
 .hero-banner {
-  background-color: #1E1B4B;
-  background-image: linear-gradient(rgba(15, 23, 42, 0.55), rgba(15, 23, 42, 0.40)), url('/app/static/hero_bg.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  background: linear-gradient(130deg, #0D9488 0%, #14B8A6 55%, #06B6D4 100%);
   border-radius: 1.2rem;
   padding: 2rem 2.1rem;
   color: #fff;
   margin-bottom: 0.9rem;
-  box-shadow: 0 10px 28px rgba(79, 70, 229, 0.28);
+  box-shadow: 0 10px 28px rgba(13, 148, 136, 0.28);
 }
 .hero-banner h1 { color: #fff !important; font-size: 2.3rem !important; margin: 0 0 0.5rem; line-height: 1.2; }
 .hero-banner .hero-tag {
