@@ -74,8 +74,14 @@ if result is not None:
         render_audio(result.audio)
         sev = info.get("severity", "高")
         st.markdown(f"**危险程度：{sev}　|　类型：{info.get('category', '')}**")
+        def _fmt(s: str) -> str:
+            s = (s or "").replace("；；", "\n").replace("；", "\n")
+            return s.strip("\n； ").replace("\n", "<br>")
+
         if info.get("advice"):
-            st.markdown(f'<div class="kv-card">💡 自救建议：{info["advice"]}</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="kv-card">💡 自救建议：<br>{_fmt(info["advice"])}</div>', unsafe_allow_html=True)
+        if info.get("precautions"):
+            st.markdown(f'<div class="kv-card">⚠️ 注意事项：<br>{_fmt(info["precautions"])}</div>', unsafe_allow_html=True)
         if info.get("call_message"):
             st.markdown(f'<div class="kv-card">📞 求助话术：{info["call_message"]}</div>', unsafe_allow_html=True)
         st.markdown("#### ☎️ 紧急电话（点击拨打）")

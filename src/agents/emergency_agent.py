@@ -21,9 +21,10 @@ class EmergencyAgent(BaseAgent):
     DEFAULT_RESULT: Dict[str, Any] = {
         "severity": "高",
         "category": "遇到危险",
-        "advice": "请保持冷静，就近寻找安全位置，并立即向周围人求助。",
+        "advice": "请保持冷静，就近寻找安全位置；立即向周围人大声求助；尽量保持原地等待救援。",
+        "precautions": "不要随意移动以免二次伤害；保持手机有电，方便与救援人员联系。",
         "broadcast": "请帮帮我，我需要帮助！",
-        "call_message": "您好，我是一名视障人士，现在遇到了紧急情况，需要您的帮助。",
+        "call_message": "您好，我是一名视障人士，现在遇到了紧急情况，位置在附近，需要您的帮助，请尽快派人来。",
     }
 
     def __init__(self, client: ZhipuClient, model: str = "glm-4-flash") -> None:
