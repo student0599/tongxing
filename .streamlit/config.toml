@@ -12,7 +12,7 @@ gatherUsageStats = false     # 关闭匿名使用统计
 # 视觉主题：靛蓝 + 暖金，高对比度，适配视障群体与弱光环境
 [theme]
 primaryColor = "#4F46E5"
-backgroundColor = "#C9F0E8"
-secondaryBackgroundColor = "#DCF4EE"
+backgroundColor = "#FAF3E1"
+secondaryBackgroundColor = "#1561AD"
 textColor = "#1E293B"
 font = "sans serif"

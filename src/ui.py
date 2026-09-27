@@ -37,16 +37,13 @@ _CSS = """
   --danger: #DC2626;
 }
 
-/* ---------- 全局背景：青绿色渐变（水光层次） ---------- */
+/* ---------- 全局背景：宣纸白（暖白） ---------- */
 html, body {
-  background-color: #C9F0E8;
+  background-color: #FAF3E1;
 }
 [data-testid="stAppViewContainer"] {
-  background-color: #C9F0E8;
-  background-image:
-    radial-gradient(900px 520px at 88% -6%, rgba(45, 212, 191, 0.28), transparent 60%),
-    radial-gradient(760px 520px at -6% 102%, rgba(56, 189, 248, 0.22), transparent 55%),
-    linear-gradient(160deg, var(--bg-start) 0%, var(--bg-mid) 45%, var(--bg-end) 100%);
+  background-color: #FAF3E1;
+  background-image: linear-gradient(160deg, #FBF5E6 0%, #FAF3E1 50%, #F5EDD9 100%);
   background-attachment: fixed;
   min-height: 100vh;
 }
@@ -319,12 +316,21 @@ html, body, [data-testid="stAppViewContainer"] {
 .fcard-purple { background: #ECE6FF; }
 .fcard-red { background: #FFE3E3; }
 
-/* ---------- 侧边栏 ---------- */
+/* ---------- 侧边栏（鸢尾蓝） ---------- */
 [data-testid="stSidebar"] {
-  background: linear-gradient(160deg, #E0E7FF 0%, #DDD6FE 50%, #C7D2FE 100%);
-  border-right: 1px solid var(--border);
+  background: #1561AD;
+  border-right: 1px solid rgba(255, 255, 255, 0.12);
 }
-.side-brand { font-size: 1.35rem; font-weight: 800; color: var(--primary); }
+.side-brand { font-size: 1.35rem; font-weight: 800; color: #ffffff; }
+[data-testid="stSidebar"] [data-testid="stCaptionContainer"] p { color: rgba(255, 255, 255, 0.82) !important; }
+[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p,
+[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] strong { color: #ffffff !important; }
+[data-testid="stSidebar"] [data-testid="stLinkButton"] a {
+  background: rgba(255, 255, 255, 0.16) !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+[data-testid="stSidebar"] hr { border-color: rgba(255, 255, 255, 0.25) !important; }
 </style>
 """
 
